@@ -14,9 +14,9 @@ abstract class Mesh[A <: VertexBase] {
   def Draw () : Unit = {
     for (i <- vertices.indices; l <- vertices(i).vertex.indices) {
       //applyScaleAndPos(vertices(i).vertex(l), vertexBasePositions(i).vertex(l),asset.transform)
-      applyScale(vertices(i).vertex(l), vertexBasePositions(i).vertex(l), asset.transform)
-      applyRotation(vertices(i).vertex(l), asset.transform)
-      applyPos(vertices(i).vertex(l), vertexBasePositions(i).vertex(l),asset.transform)
+      applyVert(vertices(i).vertex(l), applyScale(vertexBasePositions(i).vertex(l), asset.transform))
+      applyVert(vertices(i).vertex(l), applyRotation(vertices(i).vertex(l), asset.transform))
+      applyVert(vertices(i).vertex(l), applyPos(vertices(i).vertex(l), asset.transform))
       vertices(i).Update()
       vertices(i).dist = new Global().Distance(vertices(i).position, Vector3(0,0,0))
     }
@@ -24,30 +24,64 @@ abstract class Mesh[A <: VertexBase] {
 }
 
 object Mesh {
-  private def applyScaleAndPos(vertex : Vector3, oVertex : Vector3, transform: Transform): Unit = {
-    vertex.x = oVertex.x *transform.scale.x + transform.position.x
-    vertex.y = oVertex.y *transform.scale.y + transform.position.y
-    vertex.z = oVertex.z *transform.scale.z + transform.position.z
+
+  private def applyScale(oVertex : Vector3, transform: Transform): Vector3 = {
+    Vector3(
+      oVertex.x *transform.scale.x,
+      oVertex.y *transform.scale.y,
+      oVertex.z *transform.scale.z
+    )
   }
 
-  private def applyScale(vertex : Vector3, oVertex : Vector3, transform: Transform): Unit = {
-    vertex.x = oVertex.x *transform.scale.x
-    vertex.y = oVertex.y *transform.scale.y
-    vertex.z = oVertex.z *transform.scale.z
+  private def applyPos(vertex : Vector3, transform: Transform): Vector3 = {
+    Vector3(
+      vertex.x + transform.position.x,
+      vertex.y + transform.position.y,
+      vertex.z + transform.position.z
+    )
   }
 
-  private def applyPos(vertex : Vector3, oVertex : Vector3, transform: Transform): Unit = {
-    vertex.x += transform.position.x
-    vertex.y += transform.position.y
-    vertex.z += transform.position.z
+  def applyRotation(vertex : Vector3, transform: Transform): Vector3 = {
+    //pitch roll yaw from https://stackoverflow.com/questions/34050929/3d-point-rotation-algorithm/34060479
+    val angleX = transform.rotation.x * (Math.PI/180)
+    val angleY = transform.rotation.y * (Math.PI/180)
+    val angleZ = transform.rotation.z * (Math.PI/180)
+    val cosa = Math.cos(angleX)
+    val sina = Math.sin(angleX)
+
+    val cosb = Math.cos(angleY)
+    val sinb = Math.sin(angleY)
+
+    val cosc = Math.cos(angleZ)
+    val sinc = Math.sin(angleZ)
+
+    val Axx = cosa*cosb
+    val Axy = cosa*sinb*sinc - sina*cosc
+    val Axz = cosa*sinb*cosc + sina*sinc
+
+    val Ayx = sina*cosb
+    val Ayy = sina*sinb*sinc + cosa*cosc
+    val Ayz = sina*sinb*cosc - cosa*sinc
+
+    val Azx = -sinb
+    val Azy = cosb*sinc
+    val Azz = cosb*cosc
+
+    val px = vertex.x
+    val py = vertex.y
+    val pz = vertex.z
+
+    Vector3(
+      (Axx*px + Axy*py + Axz*pz).toFloat,
+      (Ayx*px + Ayy*py + Ayz*pz).toFloat,
+      (Azx*px + Azy*py + Azz*pz).toFloat
+    )
   }
 
-  //x' = x cos a - y sin a
-  //y' = x sin a + y cos a
-  private def applyRotation(vertex : Vector3, transform: Transform): Unit = {
-    vertex.x = (vertex.x * Math.cos(transform.rotation.x) - vertex.y * Math.sin(transform.rotation.x)).toFloat
-    vertex.y = (vertex.y * Math.cos(transform.rotation.y) - vertex.x * Math.sin(transform.rotation.y)).toFloat
-    vertex.z = (vertex.z * Math.cos(transform.rotation.z) - vertex.x * Math.sin(transform.rotation.z)).toFloat
+  private def applyVert(vertex : Vector3, newVector: Vector3): Unit = {
+    vertex.x = newVector.x
+    vertex.y = newVector.y
+    vertex.z = newVector.z
   }
 
   class Matrix(r : Int, c : Int) {
@@ -164,23 +198,23 @@ object Mesh {
   case class CubeFillShape (asset : Asset) extends Mesh[Triangle] {
     def init(): Array[Triangle] = Array(
       //front
-      Triangle(Vector3(-1, 1, -1), Vector3(1, 1, -1), Vector3(1, -1, -1), new Color(180, 180, 180)),
+      Triangle(Vector3(-1, 1, -1), Vector3(1, 1, -1), Vector3(1, -1, -1), Color.red),
       Triangle(Vector3(-1, 1, -1), Vector3(-1, -1, -1), Vector3(1, -1, -1), new Color(180, 180, 180)),
       //back
-      Triangle(Vector3(-1, 1, 1), Vector3(1, 1, 1), Vector3(1, -1, 1), new Color(110, 110, 110)),
+      Triangle(Vector3(-1, 1, 1), Vector3(1, 1, 1), Vector3(1, -1, 1), Color.magenta),
       Triangle(Vector3(-1, 1, 1), Vector3(-1, -1, 1), Vector3(1, -1, 1), new Color(110, 110, 110)),
       //top
-      Triangle(Vector3(-1, 1, -1), Vector3(1, 1, -1), Vector3(1, 1, 1), new Color(240, 240, 240)),
+      Triangle(Vector3(-1, 1, -1), Vector3(1, 1, -1), Vector3(1, 1, 1), Color.green),
       Triangle(Vector3(-1, 1, -1), Vector3(-1, 1, 1), Vector3(1, 1, 1), new Color(240, 240, 240)),
       //bottom
-      Triangle(Vector3(-1, -1, -1), Vector3(1, -1, -1), Vector3(1, -1, 1), new Color(80, 80, 80)),
+      Triangle(Vector3(-1, -1, -1), Vector3(1, -1, -1), Vector3(1, -1, 1), Color.yellow),
       Triangle(Vector3(-1, -1, -1), Vector3(-1, -1, 1), Vector3(1, -1, 1), new Color(80, 80, 80)),
       //left
-      Triangle(Vector3(-1, 1, -1), Vector3(-1, 1, 1), Vector3(-1, -1, -1), new Color(140, 140, 140)),
-      Triangle(Vector3(-1, 1, -1), Vector3(-1, -1, 1), Vector3(-1, -1, -1), new Color(140, 140, 140)),
+      Triangle(Vector3(-1, 1, -1), Vector3(-1, 1, 1), Vector3(-1, -1, -1), Color.blue),
+      Triangle(Vector3(-1, 1, 1), Vector3(-1, -1, 1), Vector3(-1, -1, -1), new Color(140, 140, 140)),
       //right
-      Triangle(Vector3(1, 1, -1), Vector3(1, 1, 1), Vector3(1, -1, -1), new Color(140, 140, 140)),
-      Triangle(Vector3(1, 1, -1), Vector3(1, -1, 1), Vector3(1, -1, -1), new Color(140, 140, 140))
+      Triangle(Vector3(1, 1, -1), Vector3(1, 1, 1), Vector3(1, -1, -1), Color.cyan),
+      Triangle(Vector3(1, 1, 1), Vector3(1, -1, 1), Vector3(1, -1, -1), new Color(140, 140, 140))
     )
   }
 

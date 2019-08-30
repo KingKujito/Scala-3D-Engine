@@ -96,8 +96,8 @@ class Hierarchy {
     //assets(1).transform.position.y = MousePosC.y
     //assets(2).transform.position.x = MousePosC.x
     //assets(2).transform.position.y = MousePosC.y
-    assets(1).transform.rotation.y += 0.01f
-    assets(1).transform.rotation.x += 0.001f
+    assets(1).transform.rotation.y += 1f
+    assets(1).transform.rotation.x += 0.1f
     Draw()
   }
   //render shit die niet op de pixel grid hoeft te komen
