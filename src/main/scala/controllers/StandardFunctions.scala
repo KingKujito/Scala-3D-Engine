@@ -14,7 +14,7 @@ object StandardFunctions {
   def Start () : Unit = {
     //window.open()
     for (i <- 0 until hierarchy.assets.length) {
-      hierarchy.assets(i).transform.setParent(hierarchy.worldTrans)
+      hierarchy.assets(i).transform.setParent(Some(hierarchy.worldTrans))
     }
     hierarchy.frame.visible = true
     hierarchy.Start()

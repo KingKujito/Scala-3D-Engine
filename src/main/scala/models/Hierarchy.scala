@@ -7,7 +7,7 @@ import scala.swing.Dimension
 
 class Hierarchy {
   var cam = new Camera(this)
-  var worldTrans = new Transform(0, null, Vector3(0,0,0), Vector3(0,0,0), Vector3(1,1,1), null, null)
+  var worldTrans = new Transform(0, None, Vector3(0,0,0), Vector3(0,0,0), Vector3(1,1,1), Map.empty, None)
   //MousePos on screen
   var MousePos = new Point(0,0)
 
@@ -55,27 +55,29 @@ class Hierarchy {
   //wordt geroepen als de app begint
   def Start () : Unit = {
     cam.FoV = 230
-    assets(0).transform.position.z = 100f
+    assets(0).transform.setPositionZ(100f)
     assets(0).transform.scale.x = 5f
     assets(0).transform.scale.y = 5f
     assets(0).transform.scale.z = 5f
-    assets(1).transform.position.z = 500f
+    assets(1).transform.setPositionZ(500f)
     assets(1).transform.scale.x = 50f
     assets(1).transform.scale.y = 50f
     assets(1).transform.scale.z = 50f
-    assets(2).transform.position.z = 200f
+    assets(2).transform.setPositionZ(200f)
     assets(2).transform.scale.x = 25f
     assets(2).transform.scale.y = 25f
     assets(2).transform.scale.z = 25f
 
-    assets(1).transform.setParent(assets(0).transform)
-    assets(2).transform.setParent(assets(0).transform)
+    assets(1).transform.setParent(Some(assets(0).transform))
+    assets(2).transform.setParent(Some(assets(1).transform))
     //assets(0).renderer = new rectRend(assets(0))
-    //assets(0).transform.position.x = 10
-    //assets(0).transform.position.y = 10
+    //assets(0).transform.getPosition.x = 10
+    //assets(0).transform.getPosition.y = 10
     assets(0).renderer = new PyrFillRend(assets(0))
     assets(1).renderer = new CubeFillRend(assets(1))
     assets(2).renderer = new AppleRend(assets(2))
+
+    println(assets(0).transform.children)
   }
 
   var area = 10
@@ -89,15 +91,14 @@ class Hierarchy {
     }
     //val sx = frame.size.width/2
     //val sy = frame.size.height/2
-    assets(0).transform.setPosition(Vector3( MousePosC.x, MousePosC.y, assets(0).transform.position.z ))
-    //assets(0).transform.position.x = MousePosC.x
-    //assets(0).transform.position.y = MousePosC.y
-    //assets(1).transform.position.x = MousePosC.x
-    //assets(1).transform.position.y = MousePosC.y
-    //assets(2).transform.position.x = MousePosC.x
-    //assets(2).transform.position.y = MousePosC.y
-    assets(1).transform.rotation.y += 1f
-    assets(1).transform.rotation.x += 0.1f
+    assets(0).transform.setPosition(Vector3( MousePosC.x, MousePosC.y, assets(0).transform.getPosition.z ))
+    //assets(0).transform.getPosition.x = MousePosC.x
+    //assets(0).transform.getPosition.y = MousePosC.y
+    //assets(1).transform.getPosition.x = MousePosC.x
+    //assets(1).transform.getPosition.y = MousePosC.y
+    //assets(2).transform.getPosition.x = MousePosC.x
+    //assets(2).transform.getPosition.y = MousePosC.y
+    assets(1).transform.rotate(Vector3(0.1f, 1f, 0))
     Draw()
   }
   //render shit die niet op de pixel grid hoeft te komen
@@ -126,14 +127,14 @@ class Hierarchy {
 
   }
 
-  //mouse position on screen in pixel grid
+  //mouse getPosition on screen in pixel grid
   def MousePosP : Point = {
     val pixelGapX : Float = frame.size.width/pScreenX
     val pixelGapY : Float = frame.size.height/pScreenY
     new Point( (MousePos.x/pixelGapX).toInt , (MousePos.y/pixelGapY).toInt)
   }
 
-  //mouse position on screen from center, left & top are -, right active& bottom are +
+  //mouse getPosition on screen from center, left & top are -, right active& bottom are +
   def MousePosC : Point = {
     val sx = frame.size.width/2
     val sy = frame.size.height/2

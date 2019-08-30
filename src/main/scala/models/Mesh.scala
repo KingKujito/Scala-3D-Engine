@@ -25,7 +25,7 @@ abstract class Mesh[A <: VertexBase] {
 
 object Mesh {
 
-  private def applyScale(oVertex : Vector3, transform: Transform): Vector3 = {
+  def applyScale(oVertex : Vector3, transform: Transform): Vector3 = {
     Vector3(
       oVertex.x *transform.scale.x,
       oVertex.y *transform.scale.y,
@@ -35,9 +35,9 @@ object Mesh {
 
   private def applyPos(vertex : Vector3, transform: Transform): Vector3 = {
     Vector3(
-      vertex.x + transform.position.x,
-      vertex.y + transform.position.y,
-      vertex.z + transform.position.z
+      vertex.x + transform.getPosition.x,
+      vertex.y + transform.getPosition.y,
+      vertex.z + transform.getPosition.z
     )
   }
 

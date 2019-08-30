@@ -7,5 +7,5 @@ class Asset (name_ : String, tag_ : String, active_ : Boolean, h_ : Hierarchy) {
   var active: Boolean = active_
   var renderer : Renderer = new Renderer(this)
   val id: Int = new Global().RandRange(0,999999)
-  var transform = new Transform(id, null, Vector3(0,0,0), Vector3(0,0,0), Vector3(0,0,0), null, this)
+  var transform = new Transform(id, None, Vector3(0,0,0), Vector3(0,0,0), Vector3(0,0,0), Map.empty, Some(this))
 }

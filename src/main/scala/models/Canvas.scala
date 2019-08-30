@@ -29,7 +29,7 @@ class Canvas(pixelData : Array[Array[Color]], scr : Dimension, h : Hierarchy) ex
     g.setColor(Color.black)
     g.fillRect(0,0, h.frame.size.width, h.frame.size.height)
 
-    val assts = h.assets.sortBy(_.transform.position.z).toArray
+    val assts = h.assets.sortBy(_.transform.getPosition.z).toArray
     for (i <- assts.length-1 to 0 by -1) {
       if (assts(i).active) {
         g.setColor(Color.green)

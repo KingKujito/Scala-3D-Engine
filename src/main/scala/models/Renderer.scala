@@ -19,7 +19,7 @@ object Renderer {
       if (asset.active) {
         val transform = asset.transform
         g.setColor(Color.white)
-        g.fill(new Rectangle2D.Double(transform.position.x, transform.position.y, transform.scale.x, transform.scale.y))
+        g.fill(new Rectangle2D.Double(transform.getPosition.x, transform.getPosition.y, transform.scale.x, transform.scale.y))
       }
     }
   }

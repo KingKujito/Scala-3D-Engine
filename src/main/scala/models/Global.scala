@@ -14,13 +14,13 @@ class Global () {
     (math.random * (max-min) + min).toInt
 
   //geef een list van alle assets met naam s in lijst l
-  def findAssets (s : String, l : List[Asset]) : List[Asset] = for (a <- l if a.name != null && a.name == s) yield a
+  def findAssets (s : String, l : List[Asset]) : List[Asset] = for (a <- l if a.name == s) yield a
 
   //vind de eerste asset met naam s in lijst l
   def find (s : String, l : List[Asset]) : Asset = findAssets(s,l).head
 
   //geef een list van alle assets met tag s in lijst l
-  def findAssetsWithTag (s : String, l : List[Asset]) : List[Asset] = for (a <- l if a.tag != null && a.tag == s) yield a
+  def findAssetsWithTag (s : String, l : List[Asset]) : List[Asset] = for (a <- l if a.tag == s) yield a
 
   //vind de eerste asset met tag s in lijst l
   def findWithTag (s : String, l : List[Asset]) : Asset = findAssetsWithTag(s,l).head
