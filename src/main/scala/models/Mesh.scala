@@ -18,7 +18,7 @@ abstract class Mesh[A <: VertexBase] {
       applyVert(vertices(i).vertex(l), applyRotation(vertices(i).vertex(l), asset.transform))
       applyVert(vertices(i).vertex(l), applyPos(vertices(i).vertex(l), asset.transform))
       vertices(i).Update()
-      vertices(i).dist = new Global().Distance(vertices(i).position, Vector3(0,0,0))
+      vertices(i).dist = Global.Distance(vertices(i).position, Vector3(0,0,0))
     }
   }
 }

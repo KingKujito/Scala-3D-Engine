@@ -25,8 +25,7 @@ class Hierarchy {
 
   //begin de app met testen of alle pixels het doen
   for (i <- pixels.indices; l <- pixels(0).indices) {
-    val glbl = new Global()
-    pixels(i)(l) = new Color(glbl.RandRange(1,255), glbl.RandRange(1,255), glbl.RandRange(1,255))
+    pixels(i)(l) = new Color(Global.RandRange(1,255), Global.RandRange(1,255), Global.RandRange(1,255))
   }
 
   //maak een renderer voor de pixels, pas PostDraw() aan om direct graphics te schrijven
@@ -47,9 +46,9 @@ class Hierarchy {
   var run = true	//als dit false is stopt de app
   //alle assets in de app
   var assets : List[Asset] = List(
-    new Asset("origin", "Default", true, this),
-    new Asset("origin2", "Default", true, this),
-    new Asset("origin3", "Default", true, this)
+    new Asset("pyramid", "Default", true, this),
+    new Asset("cubeBro", "Default", true, this),
+    new Asset("anApple", "Default", true, this)
   )
 
   //wordt geroepen als de app begint
@@ -85,13 +84,15 @@ class Hierarchy {
   def Update () : Unit = {
     for (i <- pixels.indices; l <- pixels.head.indices) {
       if (i < MousePosP.x+10 && i > MousePosP.x-10 && l < MousePosP.y+10 && l > MousePosP.y-10) {
-        val glbl = new Global()
-        pixels(i)(l) = new Color(glbl.RandRange(1,255), glbl.RandRange(1,255), glbl.RandRange(1,255))
+        pixels(i)(l) = new Color(Global.RandRange(1,255), Global.RandRange(1,255), Global.RandRange(1,255))
       }
     }
     //val sx = frame.size.width/2
     //val sy = frame.size.height/2
-    assets(0).transform.setPosition(Vector3( MousePosC.x, MousePosC.y, assets(0).transform.getPosition.z ))
+    //assets(0).transform.setPosition(Vector3( MousePosC.x, MousePosC.y, assets(0).transform.getPosition.z ))
+    //assets(0).transform.translate(Vector3(1, 0, 0)) //works
+    //assets(0).transform.setPosition(Vector3(1, 0, 220)) //works
+    assets(0).transform.setPosition(Vector3( MousePosC.x, MousePosC.y, 100))
     //assets(0).transform.getPosition.x = MousePosC.x
     //assets(0).transform.getPosition.y = MousePosC.y
     //assets(1).transform.getPosition.x = MousePosC.x

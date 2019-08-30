@@ -1,6 +1,23 @@
 package models
 
-class Global () {
+object Global {
+  // -500, -1000 = 500
+  // 500, -1000 = 1500
+  // 500, 1000 = 500
+  // -500, 1000 = 500
+  def difference[T](child : T, parent : T)(implicit num: Numeric[T]): T = {
+    import num._
+    parent - child
+  }
+
+  def difference(target : Vector3, current : Vector3): Vector3 = {
+    Vector3(
+      difference(current.x, target.x),
+      difference(current.y, target.y),
+      difference(current.z, target.z)
+    )
+  }
+
   //afstand in 3d ruimte
   def Distance (v1 : Vector3, v2 : Vector3) : Float =
     math.sqrt(math.pow(v2.x-v1.x , 2)+math.pow(v2.y-v1.y , 2)+math.pow(v2.z-v1.z , 2)).toFloat

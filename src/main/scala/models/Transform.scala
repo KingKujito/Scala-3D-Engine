@@ -1,4 +1,5 @@
 package models
+import models.Global._
 
 class Transform (id : Int, parent_ : Option[Transform] = None, position_ : Vector3, rotation_ : Vector3, scale_  : Vector3, child_ : Map[Int, Transform] = Map.empty, asset_ : Option[Asset] = None) {
   val ID: Int = id
@@ -30,7 +31,7 @@ class Transform (id : Int, parent_ : Option[Transform] = None, position_ : Vecto
     this.position.z += w.z
     //pas ook toe op kinderen
     children.foreach { a =>
-      a.translate(w)
+      a.translate(w) //TODO does not work on children, parent translates, childlvl1 negative translation, childlvl2 translates, Vector3(-w.x, -w.y, -w.z) fixes nothing
     }
   }
 
@@ -58,10 +59,13 @@ class Transform (id : Int, parent_ : Option[Transform] = None, position_ : Vecto
   //geef gegevens weer in locale waarde
   def localPosition : Vector3 = {
     if (parent.isDefined) {
-      val w : Vector3 = Vector3( this.position.x - parent.get.position.x, this.position.y - parent.get.position.y, this.position.z - parent.get.position.z )
+      val w : Vector3 = Vector3(
+        difference(this.position.x, parent.get.position.x),
+        difference(this.position.y, parent.get.position.y),
+        difference(this.position.z, parent.get.position.z))
       w
     } else {
-      this.position
+      position
     }
   }
 
@@ -110,16 +114,12 @@ class Transform (id : Int, parent_ : Option[Transform] = None, position_ : Vecto
     }
   }
 
-
   def setPosition (v : Vector3) : Unit = {
-    if (children.nonEmpty) {
-      val a = children.toArray
-      for (i <- a.indices) {
-        val v2 = Vector3 ( v.x + a(i).localPosition.x , v.y + a(i).localPosition.y , v.z + a(i).localPosition.z )
-        a(i).setPosition( v2 )
-      }
+    /*children.foreach {
+      a => a.setPosition( Vector3 ( v.x + a.localPosition.x , v.y + a.localPosition.y , v.z + a.localPosition.z ) )
     }
-    this.position = v
+    position = v*/
+    translate(difference(v, position))
   }
 
   def setPositionX (f : Float) : Unit = {
@@ -165,10 +165,10 @@ class Transform (id : Int, parent_ : Option[Transform] = None, position_ : Vecto
     this.scale = v
   }
 
-  def getPosition: Vector3 = if(parent.isDefined) {
+  def getPosition: Vector3 = parent.map { p =>
     //TODO get this to work properly dammit
-    val v = Mesh.applyRotation(Vector3(0,0,0), parent.get)
-    Vector3(parent.get.position.x + v.x, parent.get.position.y + v.y, parent.get.position.z + v.z)
-    position
-  } else position
+    val v = Mesh.applyRotation(localPosition, p)
+    Vector3(p.position.x + v.x, p.position.y + v.y, p.position.z + v.z)
+    //position
+  }.getOrElse(position)
 }
